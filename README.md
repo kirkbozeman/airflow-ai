@@ -41,6 +41,27 @@ docker compose ps          # confirm everything is healthy
 | `airflow-scheduler` | Decides what should run and when, executes tasks directly as subprocesses (LocalExecutor) |
 | `airflow-dag-processor` | Parses DAG files in `./dags`, separate from the scheduler |
 | `airflow-triggerer` | Runs deferred/async tasks (e.g. sensors waiting on external events) without blocking a worker slot |
+| `dwh` | Toy data warehouse — Postgres, standing in for something like Redshift |
+| `dwh-fetch` | One-off: downloads the Weimar Jazz Database (`wjazzd.db`, SQLite) fresh on every `up` |
+| `dwh-seed` | One-off: loads `wjazzd.db` into `dwh` via `pgloader`, runs after `dwh-fetch` |
+
+## Data warehouse (`dwh`)
+
+A second Postgres instance, separate from Airflow's own metadata DB, seeded with real toy data (jazz solo transcriptions) on every `docker compose up` — good for testing DAGs that query a warehouse.
+
+Airflow connection: `dwh_default` (see `config/connections.yaml`).
+
+Query it directly from the terminal:
+
+```bash
+docker exec -it airflow-local-dwh-1 psql -U dwh -d dwh
+# or, from the host, since dwh is published on 5433:
+psql -h localhost -p 5433 -U dwh -d dwh
+```
+
+Tables: `melody`, `beats`, `sections`, `solo_info`, `transcription_info`, `track_info`, `record_info`, `composition_info`, and a few others — see the [Weimar Jazz Database docs](https://jazzomat.hfm-weimar.de/dbformat/dbformat.html) for schema details.
+
+Re-seeding is idempotent (`pgloader` drops/recreates tables), so `docker compose up -d dwh-fetch dwh-seed` re-downloads and reloads on demand.
 
 ## How this compares to a production deployment
 

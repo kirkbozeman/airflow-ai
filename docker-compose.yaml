@@ -95,6 +95,47 @@ services:
       start_period: 5s
     restart: always
 
+  dwh:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: dwh
+      POSTGRES_PASSWORD: dwh
+      POSTGRES_DB: dwh
+    ports:
+      - "5433:5432"
+    volumes:
+      - dwh-db-volume:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "dwh"]
+      interval: 10s
+      retries: 5
+      start_period: 5s
+    restart: always
+
+  dwh-fetch:
+    image: curlimages/curl:latest
+    user: root
+    volumes:
+      - ${AIRFLOW_PROJ_DIR:-.}/scripts:/scripts:ro
+      - dwh-seed-data:/data
+    entrypoint: ["/bin/sh", "/scripts/fetch_wjazzd.sh"]
+    restart: "no"
+
+  dwh-seed:
+    image: dimitri/pgloader:latest
+    volumes:
+      - ${AIRFLOW_PROJ_DIR:-.}/scripts:/scripts:ro
+      - dwh-seed-data:/data
+    entrypoint: ["/bin/bash", "/scripts/seed_dwh.sh"]
+    environment:
+      DWH_DSN: postgresql://dwh:dwh@dwh:5432/dwh
+    depends_on:
+      dwh:
+        condition: service_healthy
+      dwh-fetch:
+        condition: service_completed_successfully
+    restart: "no"
+
   airflow-apiserver:
     <<: *airflow-common
     command: api-server
@@ -265,3 +306,5 @@ services:
 
 volumes:
   postgres-db-volume:
+  dwh-db-volume:
+  dwh-seed-data:
