@@ -1,8 +1,8 @@
 import logging
 from datetime import datetime
-from pydantic import BaseModel
 
 from airflow.decorators import dag, task
+from pydantic import BaseModel
 
 log = logging.getLogger(__name__)
 
@@ -44,7 +44,6 @@ def llm_task_example():
         """Explicitly log the response."""
         log.info("Answer: %s", answer)
 
-
     @task.llm(
         llm_conn_id="anthropic_default",
         system_prompt="You are a concise assistant.",
@@ -74,13 +73,14 @@ def llm_task_example():
                 result.bio,
             )
 
-
     # below run in parallel, just an example so it's ok
 
     answer1 = ask_unstructured("Do you remember the 21st night of September?")
     log_answer(answer1)
 
-    answer2 = ask_structured("Give brief one-sentence biographies of 5 famous historical figures born on September 21st.")
+    answer2 = ask_structured(
+        "Give brief one-sentence biographies of 5 famous historical figures born on September 21st."
+    )
     log_results(answer2)
 
 
