@@ -1,3 +1,14 @@
+"""
+This is an example of utilizing task.llm with Anthropic API, specifically the following:
+
+1. Ask a question, receive an unstructured text response.
+2. Ask a question, receive a structured response.
+
+Note that system_prompt can be passed per task. It can also be defined along with other parameters
+directly in the decorator.
+
+"""
+
 import logging
 from datetime import datetime
 
@@ -24,7 +35,6 @@ class Results(BaseModel):
 def llm_task_example():
     @task.llm(
         llm_conn_id="anthropic_default",
-        system_prompt="You are a concise assistant.",
     )
     def ask_unstructured(question: str):
         """The string returned by @task.llm is used as the prompt sent to the LLM,
@@ -46,7 +56,6 @@ def llm_task_example():
 
     @task.llm(
         llm_conn_id="anthropic_default",
-        system_prompt="You are a concise assistant.",
         output_type=list[Results],
     )
     def ask_structured(question: str):
@@ -75,10 +84,12 @@ def llm_task_example():
 
     # below run in parallel, just an example so it's ok
 
-    answer1 = ask_unstructured("Do you remember the 21st night of September?")
+    answer1 = ask_unstructured.override(system_prompt="You are a pensive, dramatic Victorian.")(
+        "Do you remember the 21st night of September?"
+    )
     log_answer(answer1)
 
-    answer2 = ask_structured(
+    answer2 = ask_structured.override(system_prompt="You are pretentious but concise.")(
         "Give brief one-sentence biographies of 5 famous historical figures born on September 21st."
     )
     log_results(answer2)
