@@ -1,6 +1,10 @@
-# airflow-local
+# airflow-ai
 
 Local Apache Airflow 3.3.2, run via Docker Compose (LocalExecutor + Postgres).
+
+## What is this?
+
+Hi! This is actually me. This repo contains example work and exploration of the AI tasks, operators, and tools available to Airflow. These are pretty neat and likely underused.
 
 ## Quick start
 
@@ -93,4 +97,11 @@ This setup validates DAG logic and Airflow behavior, not production readiness �
 ## Login
 
 Default: `airflow` / `airflow`
-Admin: `kirk` / `admin`
+
+## Missing from this repo
+
+`config/` and `.env` are gitignored and not committed — bring your own:
+
+- `.env` — `AIRFLOW_UID`, `FERNET_KEY`
+- `config/connections.yaml`
+- `config/variables.yaml`

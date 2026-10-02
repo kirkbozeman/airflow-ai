@@ -6,7 +6,6 @@ This is an example of utilizing task.llm with Anthropic API, specifically the fo
 
 Note that system_prompt can be passed per task. It can also be defined along with other parameters
 directly in the decorator.
-
 """
 
 import logging
