@@ -23,19 +23,6 @@ DAGs go in `./dags` — picked up automatically, no restart needed.
 
 After changing `requirements.txt` or the `Dockerfile`, rebuild: `docker compose build && docker compose up -d`.
 
-## Example DAGs
-
-All use the `anthropic_default` connection and are tagged `claude`.
-
-| DAG | Demonstrates |
-|---|---|
-| `llm_task_example` | `@task.llm` — unstructured and structured (`output_type`) responses |
-| `llm_branch_example` | `@task.llm_branch` |
-| `llm_sql_example` | `@task.llm_sql` — question to SQL against `dwh_default` (logged, not executed) |
-| `llm_file_analysis_example` | `@task.llm_file_analysis` — downloads a Kaggle CSV at run time (not stored in the repo) and analyzes it |
-| `task_agent_example` | `@task.agent` with `SQLToolset` |
-| `task_failure_triage_example` | LLM-based failure triage |
-
 ## Manual restart
 
 If Docker Desktop isn't running, start it first and wait for the daemon:
