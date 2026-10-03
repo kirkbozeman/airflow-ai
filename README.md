@@ -84,10 +84,6 @@ Tables: `melody`, `beats`, `sections`, `solo_info`, `transcription_info`, `track
 
 Re-seeding is idempotent (`pgloader` drops/recreates tables), so `docker compose up -d dwh-fetch dwh-seed` re-downloads and reloads on demand.
 
-## Login
-
-Default: `airflow` / `airflow`
-
 ## Missing from this repo
 
 `config/` and `.env` are gitignored and not committed — bring your own:
