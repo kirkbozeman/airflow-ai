@@ -1,5 +1,4 @@
-"""
-This is an example of utilizing task.llm with Anthropic API, specifically the following:
+"""This is an example of utilizing task.llm with Anthropic API, specifically the following:
 
 1. Ask a question, receive an unstructured text response.
 2. Ask a question, receive a structured response.
@@ -36,14 +35,14 @@ def llm_task_example():
         llm_conn_id="anthropic_default",
     )
     def ask_unstructured(question: str):
-        """The string returned by @task.llm is used as the prompt sent to the LLM,
-        rather than being pushed directly to XCom like a normal TaskFlow return value.
+        """The string returned by @task.llm is used as the prompt sent to the LLM, rather than being
+        pushed directly to XCom like a normal TaskFlow return value.
 
-        The LLM's response is then stored in XCom as `return_value`, so downstream
-        tasks receive the response, not the original prompt.
+        The LLM's response is then stored in XCom as `return_value`, so downstream tasks receive the
+        response, not the original prompt.
 
-        If a downstream task also needs the original question, it must be pushed
-        to XCom explicitly before returning.
+        If a downstream task also needs the original question, it must be pushed to XCom explicitly
+        before returning.
         """
         log.info("Question: %s", question)
         return question
@@ -58,14 +57,13 @@ def llm_task_example():
         output_type=list[Results],
     )
     def ask_structured(question: str):
-        """Same prompt/XCom inversion as ask_unstructured, but the reply is
-        forced into `output_type` (list[Results]) instead of returned as raw text.
+        """Same prompt/XCom inversion as ask_unstructured, but the reply is forced into
+        `output_type` (list[Results]) instead of returned as raw text.
 
-        There's no explicit mapping telling the model which words go in which
-        field. It infers that from the prompt content plus the schema itself —
-        field names (first_name, bio, ...), their types, and any
-        Field(description=...) you add. Vague field names could cause problems,
-        so be clear when defining them.
+        There's no explicit mapping telling the model which words go in which field. It infers that
+        from the prompt content plus the schema itself — field names (first_name, bio, ...), their
+        types, and any Field(description=...) you add. Vague field names could cause problems, so be
+        clear when defining them.
         """
         log.info("Question: %s", question)
         return question

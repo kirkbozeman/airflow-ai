@@ -1,6 +1,4 @@
-"""
-This is an example of utilizing task.agent with Anthropic API, specifically the SQLToolset.
-"""
+"""This is an example of utilizing task.agent with Anthropic API, specifically the SQLToolset."""
 
 import logging
 from datetime import datetime
@@ -35,10 +33,8 @@ def task_agent_example():
         usage_limits=UsageLimits(request_limit=10, tool_calls_limit=10),
     )
     def analyze(question: str):
-        """Same prompt/XCom inversion as @task.llm, but the agent can call
-        SQLToolset's tools (list_tables, get_schema, query, check_query) in a
-        loop before producing a final answer.
-        """
+        """Same prompt/XCom inversion as @task.llm, but the agent can call SQLToolset's tools
+        (list_tables, get_schema, query, check_query) in a loop before producing a final answer."""
         log.info("Question: %s", question)
         return question
 
