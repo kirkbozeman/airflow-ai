@@ -21,6 +21,21 @@ UI: http://localhost:8080
 
 DAGs go in `./dags` — picked up automatically, no restart needed.
 
+After changing `requirements.txt` or the `Dockerfile`, rebuild: `docker compose build && docker compose up -d`.
+
+## Example DAGs
+
+All use the `anthropic_default` connection and are tagged `claude`.
+
+| DAG | Demonstrates |
+|---|---|
+| `llm_task_example` | `@task.llm` — unstructured and structured (`output_type`) responses |
+| `llm_branch_example` | `@task.llm_branch` |
+| `llm_sql_example` | `@task.llm_sql` — question to SQL against `dwh_default` (logged, not executed) |
+| `llm_file_analysis_example` | `@task.llm_file_analysis` — downloads a Kaggle CSV at run time (not stored in the repo) and analyzes it |
+| `task_agent_example` | `@task.agent` with `SQLToolset` |
+| `task_failure_triage_example` | LLM-based failure triage |
+
 ## Manual restart
 
 If Docker Desktop isn't running, start it first and wait for the daemon:
@@ -69,33 +84,6 @@ Tables: `melody`, `beats`, `sections`, `solo_info`, `transcription_info`, `track
 
 Re-seeding is idempotent (`pgloader` drops/recreates tables), so `docker compose up -d dwh-fetch dwh-seed` re-downloads and reloads on demand.
 
-## How this compares to a production deployment
-
-**Similar** — same architecture, same code path:
-
-- Every role above exists in production Airflow too; this isn't a simplified topology, just single-instance.
-- DAG parsing and scheduling are decoupled from each other the same way in prod — that split exists for scalability/security isolation.
-- DAGs written here run unmodified in production, regardless of executor — DAG code doesn't change based on how tasks get executed.
-
-Note: with LocalExecutor, task **execution** is not decoupled — it runs as a subprocess of the scheduler here, unlike CeleryExecutor/KubernetesExecutor in prod where execution happens on separate workers/pods. If you need to test executor-specific behavior (queue routing, worker scaling, broker failure), that's the tradeoff for this setup's simplicity.
-
-**Different** — this is single-node; production is distributed and hardened:
-
-| Aspect | Here | Production |
-|---|---|---|
-| Executor/workers | LocalExecutor — scheduler runs tasks as subprocesses, no broker/worker split | KubernetesExecutor (task = pod) or CeleryExecutor with many autoscaled worker replicas + broker |
-| Scheduler/apiserver | 1 of each | Multiple replicas for HA, behind a load balancer |
-| Metadata DB | Postgres container, local volume, no backups | Managed DB (RDS/Cloud SQL), backups, read replicas, pgbouncer |
-| Secrets | Plaintext in `.env` (Fernet key, JWT secret) | Secrets backend — Vault, AWS Secrets Manager, K8s secrets |
-| DAG delivery | Bind-mounted local folder, live edits | git-sync sidecar, bucket sync, or baked into image via CI/CD |
-| Image | Stock `apache/airflow` image | Custom-built image with pinned providers/deps, versioned in CI |
-| Networking | Ports open on localhost, no TLS | Ingress/LB with TLS, private networking, SSO/OIDC auth manager |
-| Orchestration | Docker Compose, single host | Kubernetes/ECS/managed service (MWAA, Cloud Composer, Astronomer), multi-node |
-| Observability | `docker compose logs` | StatsD/Prometheus/Grafana metrics, centralized log shipping, alerting |
-| Availability | Every component is a single point of failure | Redundant across nodes/AZs |
-
-This setup validates DAG logic and Airflow behavior, not production readiness — it doesn't tell you how it scales, survives a node dying, or holds up under real secrets/network policy.
-
 ## Login
 
 Default: `airflow` / `airflow`
@@ -105,13 +93,10 @@ Default: `airflow` / `airflow`
 `config/` and `.env` are gitignored and not committed — bring your own:
 
 - `.env` — `AIRFLOW_UID`, `FERNET_KEY`
-- `config/connections.yaml`
+- `config/connections.yaml` — must include `anthropic_default` (`conn_type: pydanticai`, Anthropic API key as `password`, `extra.model`) and `dwh_default`
 - `config/variables.yaml`
 
 # TODO
-
-https://airflow.apache.org/blog/common-ai-provider/
-https://airflow.apache.org/docs/apache-airflow-providers-common-ai/stable/operators/llm.html
 
 - @task.llm_schema_compare (could be hard to test)
 - HookToolset
@@ -120,3 +105,9 @@ https://airflow.apache.org/docs/apache-airflow-providers-common-ai/stable/operat
 - DataFusionToolset
 - PydanticAIHook
 - HITL
+
+
+# References
+
+- https://airflow.apache.org/blog/common-ai-provider/
+- https://airflow.apache.org/docs/apache-airflow-providers-common-ai/stable/operators/llm.html
