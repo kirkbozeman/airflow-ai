@@ -6,6 +6,8 @@ Local Apache Airflow 3.3.2, run via Docker Compose (LocalExecutor + Postgres).
 
 Hi! This is actually me. This repo contains example work and exploration of the AI tasks, operators, and tools available to Airflow. These are pretty neat and likely underused.
 
+These examples are done with Claude but could be easily reworked to use Codex, etc.
+
 ## Quick start
 
 ```bash
@@ -105,3 +107,16 @@ Default: `airflow` / `airflow`
 - `.env` — `AIRFLOW_UID`, `FERNET_KEY`
 - `config/connections.yaml`
 - `config/variables.yaml`
+
+# TODO
+
+https://airflow.apache.org/blog/common-ai-provider/
+https://airflow.apache.org/docs/apache-airflow-providers-common-ai/stable/operators/llm.html
+
+- @task.llm_schema_compare (could be hard to test)
+- HookToolset
+- SQLToolset
+- MCPToolset
+- DataFusionToolset
+- PydanticAIHook
+- HITL
