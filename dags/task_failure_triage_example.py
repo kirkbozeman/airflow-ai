@@ -1,6 +1,5 @@
-"""
-This is an example of utilizing reading a failure log with a downstream LLM task to
-assist in triage.
+"""This is an example of utilizing reading a failure log with a downstream LLM task to assist in
+triage.
 
 You'll need to add this to connections for things to fail correctly (lol):
 
@@ -24,17 +23,16 @@ log = logging.getLogger(__name__)
 
 
 @dag(
-    dag_id="task_failure_triage",
+    dag_id="task_failure_triage_example",
     schedule=None,
     start_date=datetime(2024, 1, 1),
     catchup=False,
     tags=["claude"],
 )
-def task_failure_triage():
+def task_failure_triage_example():
 
     def _api_auth(connection: str):
-        """Get Airflow API base_url and headers"""
-
+        """Get Airflow API base_url and headers."""
         api_conn = BaseHook.get_connection(connection)
         base_url = api_conn.host
 
@@ -92,4 +90,4 @@ def task_failure_triage():
     log_explanation(explain_failure(failed_log))
 
 
-task_failure_triage()
+task_failure_triage_example()

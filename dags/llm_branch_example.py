@@ -1,7 +1,7 @@
-"""
-Example of @task.llm_branch: the LLM routes to one of several downstream
-tasks. Downstream task IDs are discovered automatically from the DAG
-topology and presented to the LLM as the set of valid choices.
+"""Example of @task.llm_branch: the LLM routes to one of several downstream tasks.
+
+Downstream task IDs are discovered automatically from the DAG topology and presented to the LLM as
+the set of valid choices.
 """
 
 import logging
@@ -14,13 +14,13 @@ log = logging.getLogger(__name__)
 
 
 @dag(
-    dag_id="llm_branch_random",
+    dag_id="llm_branch_example",
     schedule=None,
     start_date=datetime(2024, 1, 1),
     catchup=False,
     tags=["claude"],
 )
-def llm_branch_random():
+def llm_branch_example():
 
     @task
     def generate_random_letter() -> str:
@@ -31,12 +31,11 @@ def llm_branch_random():
         system_prompt="Route to the task matching the given letter.",
     )
     def pick_branch(letter: str):
-        """
-        Note that the tasks are actually named task_<a|b|c>, so the LLM has to infer
-        the correct task from A, B, and C. This fuzzinessis fine here but would be a bit
-        iffy in a prod env.
-        """
+        """Note that the tasks are actually named task_<a|b|c>, so the LLM has to infer the correct
+        task from A, B, and C.
 
+        This fuzziness is fine here but would be a bit iffy in a prod env.
+        """
         return f"Route to {letter.lower()}."
 
     @task
@@ -54,4 +53,4 @@ def llm_branch_random():
     pick_branch(generate_random_letter()) >> [task_a(), task_b(), task_c()]
 
 
-llm_branch_random()
+llm_branch_example()
