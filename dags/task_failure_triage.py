@@ -1,6 +1,14 @@
 """
 This is an example of utilizing reading a failure log with a downstream LLM task to
 assist in triage.
+
+You'll need to add this to connections for things to fail correctly (lol):
+
+airflow_api_default:
+  conn_type: http
+  host: http://airflow-apiserver:8080
+  login: airflow
+  password: airflow
 """
 
 import logging
@@ -64,7 +72,7 @@ def task_failure_triage():
 
     @task.llm(
         llm_conn_id="anthropic_default",  # anthropic_default is already pinned to Haiku
-        system_prompt="You are an SRE triaging a pipeline failure.",
+        system_prompt="You are a Data Engineer triaging a pipeline failure.",
     )
     def explain_failure(log_text: str):
         """Same prompt/XCom inversion as @task.llm elsewhere - the string
