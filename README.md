@@ -6,7 +6,7 @@ Local Apache Airflow 3.3.2, run via Docker Compose (LocalExecutor + Postgres).
 
 Hi! This is actually me. This repo contains example work and exploration of the AI tasks, operators, and tools available to Airflow. These are pretty neat and likely underused.
 
-These examples are done with Claude but could be easily reworked to use Codex, etc.
+These examples are done with the Anthropic API but could be easily reworked to use OpenAI, etc.
 
 ## Quick start
 
